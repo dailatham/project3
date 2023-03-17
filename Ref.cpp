@@ -180,3 +180,7 @@ void Ref::displayNonExisted() {
 void Ref::displayBookNameCh() {
      cout << "\n" << book_names[book] << " " << chap;
 }
+void Ref::displayVerse() { 	
+     cout << verse;
+}
+

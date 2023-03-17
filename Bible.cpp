@@ -1,3 +1,4 @@
+// 535
 // Bible class function definitions
 // Computer Science, MVNU
 
@@ -14,11 +15,11 @@ using namespace std;
 Bible::Bible() { // Default constructor
 	infile = "/home/class/csc3004/Bibles/web-complete";
 	buildIndex(infile);
-//	bibleIter = index.begin();
+	bibleIter = index.begin();
 }
 
 // Constructor – pass bible filename
-Bible::Bible(const string s) {	
+Bible::Bible(const string s) {
 	infile = s;
 	buildIndex(infile);
 }
@@ -26,7 +27,7 @@ Bible::Bible(const string s) {
 
 int Bible::buildIndex(string filename)
 {
-	bool debug = true;
+	bool debug = false;
 	ifstream infile;     // input file descriptor
 	int position;        // location of line in the file
 	infile.open(filename.c_str(), ios::in);
@@ -93,7 +94,12 @@ Verse Bible::lookup(Ref ref, LookupResult& status) {
     Verse verse;
     Ref cur;
     bool bookFound = false, chapFound = false, verseFound = false;
+    bool doIndex = true;
+    int returnValue;
+    string line;
 
+/*
+    // Regular Search
     do {
 	// get a next verse
 	getline(instream, s);
@@ -123,8 +129,57 @@ Verse Bible::lookup(Ref ref, LookupResult& status) {
 	else if (bookFound){ status = NO_CHAPTER; }
 	else { status = NO_BOOK; }
     }
+*/
+    // Index Search
+    // cout << "I'm doing Index Search." << endl;
+    bibleIter = indexSearch(ref); 
+    returnValue = bibleIter->second;
+    instream.seekg(returnValue);
+    getline(instream, line);
+    aVerse = Verse(line);
+    cur = aVerse.getRef();
+/*    cout << "REF BOOK: " << ref.getBook() << endl;
+    cout << "REF CHAP: " << ref.getChap() << endl;
+    cout << "REF VERSE: " << ref.getVerse() << endl;
+    cout << "CUR BOOK: " << cur.getBook() << endl;
+    cout << "CUR CHAP: " << cur.getChap() << endl;
+    cout << "CUR VERSE: " << cur.getVerse() << endl;
+*/
+    // check if the current book, chapter, verse exist.
+    if (cur.getBook() == ref.getBook()) {
+		bookFound = true;
+    }
+    if (cur.getBook() == ref.getBook() && cur.getChap() == ref.getChap()) { 
+		chapFound = true;
+    }
+    if (cur.getBook() == ref.getBook() && cur.getChap() == ref.getChap() && cur.getVerse() == ref.getVerse()) {
+		verseFound == true;
+    }
+    // check if the retreive verse match the ref
+    if (cur == ref){
+		aVerse = verse;
+		status = SUCCESS;
+		//cout << "if (verse.getRef() == ref) --> SUCCESS" << endl;
+		return aVerse;
+    }
 
-    return(aVerse);
+/*
+    // update the status
+    if (status != SUCCESS) {
+	if (bookFound && chapFound) { status = NO_VERSE; cout << "status NO_VERSE" << endl; }
+	else if (bookFound){ status = NO_CHAPTER; cout << "status NO_CHAPTER" << endl; }
+	else { status = NO_BOOK; cout << "status NO_BOOK" << endl; }
+    }
+*/
+
+    // DEBUG update the status
+    if (status != SUCCESS) {
+	if (bookFound && chapFound) { status = NO_VERSE; }
+	else if (bookFound){ status = NO_CHAPTER; }
+	else { status = NO_BOOK; }
+    }
+//    status = SUCCESS;
+    return aVerse;
 }
 
 // REQUIRED: Return the next verse from the Bible file stream if the file is open.
@@ -133,22 +188,41 @@ Verse Bible::nextVerse(LookupResult& status) {
 	Verse verse;
 	Ref ref1 = Ref(1,1,1);
 	string s;
+	int returnValue;
 
 	if (!instream){
 		instream.open(infile.c_str(), ios::in);
 		verse = lookup(ref1, status);
-		return verse;
-	} else {
-		getline(instream, s);
-		verse = Verse(s);
-		return verse;
 	}
+	else {
+		bibleIter++;
+		auto iter = index.end();
+		iter--;
+		if (bibleIter->second == iter->second) {
+			returnValue = bibleIter->second;
+			instream.seekg(returnValue, ios::beg); 
+			getline(instream, s);
+			verse = Verse(s);
+			status = OTHER; 
+		}
+		else if (bibleIter->first < iter->first) { 
+			returnValue = bibleIter->second;
+			instream.seekg(returnValue, ios::beg);
+			getline(instream, s);
+			verse = Verse(s);
+			status = SUCCESS;
+		}
+		else {
+			status = OTHER;
+			verse;
+		}
+	}
+	return verse;
 }
 
 // REQUIRED: Return an error message string to describe status
 string Bible::error(LookupResult status) {
 	//DAISY
-//	cout << "ERROR :  " << status <<  endl;
 	if (status == NO_BOOK) {
 		return "Error : No book found.";
 	}
@@ -169,12 +243,10 @@ string Bible::error(LookupResult status) {
 void Bible::display() {
 	cout << "Bible file: " << infile << endl;
 }
-	
+
 // OPTIONAL access functions
 // OPTIONAL: Return the reference after the given ref
 Ref Bible::next(const Ref ref, LookupResult& status) {
-//1
-	// have file advance to reference given, then return next reference after that
 	auto value = indexSearch(ref); // Assume ref exists already
 	value++;
 	auto iter = index.end();
@@ -186,8 +258,7 @@ Ref Bible::next(const Ref ref, LookupResult& status) {
 	map<Ref, int>::iterator failSearch = index.begin();
 	status = OTHER;
 	return failSearch->first;
-
 }
 
-// OPTIONAL: Return the reference before the given ref
-Ref Bible::prev(const Ref ref, LookupResult& status) {}
+// Return the reference before the given ref
+//const Ref Bible::prev(Ref ref, LookupResult& status) {}

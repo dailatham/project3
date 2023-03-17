@@ -38,7 +38,7 @@ Bible.o : Ref.h Verse.h Bible.h Bible.cpp
 
 # TO DO: For bibleajax.cgi, add dependencies to include
 # compiled classes from Project 1 to be linked into the executable program
-bibleajax.cgi:	bibleajax.o Ref.o Verse.o Bible.o 
+#-bibleajax.cgi:	bibleajax.o Ref.o Verse.o Bible.o 
 #-		$(CC) $(CFLAGS) -o bibleajax.cgi bibleajax.o Ref.o Verse.o Bible.o -lcgicc 
 		# -l option is necessary to link with cgicc library
 

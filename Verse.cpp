@@ -40,8 +40,15 @@ Ref Verse::getRef() {
 int Verse::getVerseNum() {
 	return verseNum;
 }
+
 // display reference and verse
 void Verse::display() {
     verseRef.display();
+    cout << " " << verseText;
+ }
+
+// display only verse
+void Verse::onlyVerseDisplay() {
+    verseRef.displayVerse();
     cout << " " << verseText;
  }

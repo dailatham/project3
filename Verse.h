@@ -37,6 +37,9 @@ class Verse {
    // Display Verse on cout
    void display(); // Display ref & verse [with line breaks in needed].
         // the reference should be displayed by calling verseref.display().
+
+   // display only verse
+   void onlyVerseDisplay();
 };
 
 #endif //Verse_H

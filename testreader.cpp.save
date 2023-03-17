@@ -15,7 +15,7 @@ int main(int argc, char** argv) {
 	Bible webBible("/home/class/csc3004/Bibles/web-complete");
 
 	Verse verse;
-	int b, c, v, NumV, n = 0;
+	int b, c, v, NumV, n;
 	LookupResult result;
 
 	if (argc == 1) {
@@ -33,77 +33,56 @@ int main(int argc, char** argv) {
 		cout << "Error: verse number is missing" << endl;
 		return 34;
 	}
-	else if (argc > 5) {
+/*	else if (argc > 6) {
 		cout << "--------------------------------------------------" << endl;
 		cerr << "Error: too many arguments" << endl;
 		return 34;
 	}
-
-	// Assign value
-	b = stoi(argv[1]);
+*/	b = stoi(argv[1]);
 	c = stoi(argv[2]);
 	v = stoi(argv[3]);
 	n = 0;
-	if (argc > 3) {
+	if (argc > 4) {
 		n = stoi(argv[4]);
+		cout << "n= " << n << endl;
 	}
 
 	// Create a reference from the numbers
 	Ref ref(b, c, v);
-
-	// Value to help keep track of program.
+//	int curV = v;		// current verse
+//	int finalV = n;	// final or destination verse
 	int count = 0;
-	int curVNum = 0;
-
 
 	// Look up the first verse base on reference and display the result.
-	//cout << "--------------------------------------------------" << endl;
+	cout << "--------------------------------------------------" << endl;
+//	cout << "Result from the original (Bible.lookup) : " << endl;
 	verse = webBible.lookup(ref, result);
-	count++;
-	curVNum = ref.getVerse();
-	cout << "RESULT STATUS: " << result << endl;
-	if (result == SUCCESS) {cout << "SUCCESS" << endl;}
-	if (result == NO_VERSE) {cout << "NO_VERSE"<< endl;}
-	if (result == NO_CHAPTER) {cout << "NO_CHAPTER" << endl;}
-	if (result == NO_BOOK) {cout << "NO_BOOK" << endl;}
-
-	// Report Verse
-/*	if (!(verse.getRef() == ref)){
-		ref.displayNonExisted();
-		cout << endl;
-
-		if (result != SUCCESS){
-			cout << webBible.error(result) << endl;
-		}
-		exit(2);
-	} else {
-		verse.display();
-		cout << endl;
-	}
-*/
+//	curV++;
+	count++; 
 	if (!(verse.getRef() == ref)){
 		ref.displayNonExisted();
-		cout << "/n" << webBible.error(result) << endl;
+		cout << endl;
 		exit(2);
 	} else {
 		verse.display();
-		cout << endl;
+		cout << "\n" << endl;
 	}
 
 	// Multi-verse
 	while (count < n) {
-		verse = webBible.nextVerse(result);
-		count++;
-		curVNum = verse.getVerseNum();
-
-		// Report Verse
-		if ( curVNum == 1) {
-			verse.display();
-			cout << endl;
-		} else {
-			verse.onlyVerseDisplay();
-			cout << endl;
-		}
+		//do {
+			verse = webBible.nextVerse(result);
+			count++;
+//			verse.display();
+//			cout << "\n" << endl;
+ 			if (!(verse.getRef() == ref)){
+				ref.displayNonExisted();
+				cout << endl;
+				exit(2);
+			} else {
+				verse.display();
+				cout << "\n" << endl;
+			}
 	}
 }
 

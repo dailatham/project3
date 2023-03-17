@@ -42,6 +42,8 @@ public:
    // corresponding to the stored book number.
    void displayNonExisted();
    void displayBookNameCh();
+   void displayVerse();	
+
 };
 
 #endif //Ref_H
