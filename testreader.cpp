@@ -17,6 +17,7 @@ int main(int argc, char** argv) {
 	Verse verse;
 	int b, c, v, NumV, n = 0;
 	LookupResult result;
+	bool debug = true;
 
 	if (argc == 1) {
 		cout << "--------------------------------------------------" << endl;
@@ -44,12 +45,20 @@ int main(int argc, char** argv) {
 	c = stoi(argv[2]);
 	v = stoi(argv[3]);
 	n = 0;
-	if (argc > 3) {
+	if (argc > 4) {
 		n = stoi(argv[4]);
 	}
 
 	// Create a reference from the numbers
 	Ref ref(b, c, v);
+
+	// DEBUG
+	if (debug){
+		cout << "b = " << b << endl;
+		cout << "c = " << c << endl;
+		cout << "v = " << v << endl;
+		cout << "n = " << n << endl;
+	}
 
 	// Value to help keep track of program.
 	int count = 0;
@@ -61,12 +70,15 @@ int main(int argc, char** argv) {
 	verse = webBible.lookup(ref, result);
 	count++;
 	curVNum = ref.getVerse();
-	cout << "RESULT STATUS: " << result << endl;
-	if (result == SUCCESS) {cout << "SUCCESS" << endl;}
-	if (result == NO_VERSE) {cout << "NO_VERSE"<< endl;}
-	if (result == NO_CHAPTER) {cout << "NO_CHAPTER" << endl;}
-	if (result == NO_BOOK) {cout << "NO_BOOK" << endl;}
 
+	// DEBUG
+	if ( true ) {
+		cout << "RESULT STATUS: " << result << endl;
+		if (result == SUCCESS) {cout << "SUCCESS" << endl;}
+		if (result == NO_VERSE) {cout << "NO_VERSE"<< endl;}
+		if (result == NO_CHAPTER) {cout << "NO_CHAPTER" << endl;}
+		if (result == NO_BOOK) {cout << "NO_BOOK" << endl;}
+	}
 	// Report Verse
 /*	if (!(verse.getRef() == ref)){
 		ref.displayNonExisted();
@@ -83,7 +95,7 @@ int main(int argc, char** argv) {
 */
 	if (!(verse.getRef() == ref)){
 		ref.displayNonExisted();
-		cout << "/n" << webBible.error(result) << endl;
+		cout << "\n" << webBible.error(result) << endl;
 		exit(2);
 	} else {
 		verse.display();
@@ -105,5 +117,6 @@ int main(int argc, char** argv) {
 			cout << endl;
 		}
 	}
+	return 0;
 }
 
