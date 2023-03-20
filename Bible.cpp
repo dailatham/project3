@@ -212,19 +212,23 @@ void Bible::display() {
 // OPTIONAL access functions
 // OPTIONAL: Return the reference after the given ref
 Ref Bible::next(const Ref ref, LookupResult& status) {
-	auto value = indexSearch(ref); // Assume ref exists already
-	value++;
+	Ref nextRef;
+	Verse nextVerse;
+	int returnValue;
+	LookupResult result;
+	string line;
 
-	auto iter = index.end();
-	iter--;
-	if (value->first < iter->first) {
-		status = SUCCESS;
-		return value->first;
+	bibleIter = index.find(ref);
+	if (bibleIter != index.end()) {
+		bibleIter++;
+		returnValue = bibleIter->second;
+		instream.seekg(returnValue);
+    		getline(instream, line);
+    		nextVerse = Verse(line);
+		nextRef = nextVerse.getRef();
 	}
-	map<Ref, int>::iterator failSearch = index.begin();
-	status = OTHER;
-	return failSearch->first;
-//	return ref;
+
+	return nextRef;
 }
 
 // Return the reference before the given ref

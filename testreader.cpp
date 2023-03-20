@@ -101,6 +101,18 @@ int main(int argc, char** argv) {
 			cout << endl;
 		}
 	}
+
+	// Bible.cpp next function
+	bool displayNextRef = false;
+
+	if (displayNextRef) {
+	Ref nextRef = webBible.next(ref, result);
+	nextRef.displayBookNameCh();
+	cout << endl;
+	nextRef.displayVerse();
+	cout << endl;
+	}
+
 	return 0;
 }
 
