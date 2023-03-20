@@ -26,7 +26,7 @@ Bible::Bible(const string s) {
 
 int Bible::buildIndex(string filename)
 {
-	bool debug = true;
+	bool debug = false;
 	ifstream infile;     // input file descriptor
 	int position;        // location of line in the file
 	infile.open(filename.c_str(), ios::in);
@@ -48,6 +48,7 @@ int Bible::buildIndex(string filename)
 		}
 	}
 
+	// DEBUG
 	if (debug) {
 		cout << "Refs made: " << index.size() << endl;
 		auto iter = index.end();
@@ -89,10 +90,9 @@ Verse Bible::lookup(Ref ref, LookupResult& status) {
     // DAISY
     instream.open(infile.c_str(), ios::in);
     string s;
-//    Ref cur = Ref();
     bool bookFound = false, chapFound = false, verseFound = false;
     bool doIndex = true;
-    bool debug = true;
+    bool debug = false;
     int returnValue;
     string line;
 
@@ -103,66 +103,29 @@ Verse Bible::lookup(Ref ref, LookupResult& status) {
     Ref refBook = Ref(bookNum, 1, 1);
     Ref refBookChap = Ref(bookNum, chapNum, 1);
 
-   if (debug){
+    // DEBUG
+    if (debug){
 	cout << "\nBible.cpp error checking REF: " << endl;
    	cout << "bookNum = " << bookNum << endl;
    	cout << "chapNum = " << chapNum << endl;
    	cout << "verseNum = " << verseNum << endl;
-   }
-
-/*
-    // Regular Search
-    do {
-	// get a next verse
-	getline(instream, s);
-		if (s != ""){
-		verse = Verse(s);
-		cur = verse.getRef();
-
-		// check if the current book, chapter, verse exist.
-		if (cur.getBook() == ref.getBook())
-			bookFound = true;
-		if (cur.getBook() == ref.getBook() && cur.getChap() == ref.getChap())
-			chapFound = true;
-		if (cur.getBook() == ref.getBook() && cur.getChap() == ref.getChap() && cur.getVerse() == ref.getVerse())
-			verseFound == true;
-
-		// check if the retreive verse match the ref
-		if (verse.getRef() == ref){
-			aVerse = verse;
-			status = SUCCESS;
-		}
-		}
-    } while (!(verse.getRef() == ref) && !instream.fail());
-
-    // update th status
-    if (status != SUCCESS) {
-	if (bookFound && chapFound) { status = NO_VERSE; }
-	else if (bookFound){ status = NO_CHAPTER; }
-	else { status = NO_BOOK; }
     }
-*/
-cout << "\nhere before check if book exist" << endl;
+
     // Checking if book exist
     bibleIter = index.find(refBook);
     if (bibleIter != index.end()) {
 	bookFound = true;
     }
 
-cout << "\nhere before check if chapter exist" << endl;
     // Check if chapter exist
     bibleIter = index.find(refBookChap);
     if (bibleIter != index.end()) {
 	chapFound = true;
     }
 
-cout << "\nhere before do index search" << endl;
     // Index Search
     bibleIter = index.find(ref); 
-cout << "\nbefore do SUCCESS" << endl;
-//    if (bookFound == true && chapFound == true){
     if (bibleIter != index.end()) {
-cout << "\nin SUCCESS loop do SUCCESS" << endl;
  	returnValue = bibleIter->second;
    	instream.seekg(returnValue);
     	getline(instream, line);
@@ -171,11 +134,9 @@ cout << "\nin SUCCESS loop do SUCCESS" << endl;
 	verseFound = true;
 
     } else {
-cout << "\nthe ref doesnt exist" << endl;
 	aVerse = Verse();
     }
 
-cout << "\nupdating status" << endl;
     // Update status
     if (status != SUCCESS) {
 	if (bookFound && chapFound) { status = NO_VERSE; }
@@ -263,7 +224,6 @@ Ref Bible::next(const Ref ref, LookupResult& status) {
 	map<Ref, int>::iterator failSearch = index.begin();
 	status = OTHER;
 	return failSearch->first;
-
 //	return ref;
 }
 

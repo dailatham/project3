@@ -17,25 +17,21 @@ int main(int argc, char** argv) {
 	Verse verse;
 	int b, c, v, NumV, n = 0;
 	LookupResult result;
-	bool debug = true;
+	bool debug = false;
 
 	if (argc == 1) {
-		cout << "--------------------------------------------------" << endl;
 		cout << "Error: everything is missing" << endl;
 		return 34;
 	}
 	else if (argc == 2) {
-		cout << "--------------------------------------------------" << endl;
 		cout << "Error: chapter and verse number are missing" << endl;
 		return 34;
 	}
 	else if (argc == 3) {
-		cout << "--------------------------------------------------" << endl;
 		cout << "Error: verse number is missing" << endl;
 		return 34;
 	}
 	else if (argc > 5) {
-		cout << "--------------------------------------------------" << endl;
 		cerr << "Error: too many arguments" << endl;
 		return 34;
 	}
@@ -54,6 +50,7 @@ int main(int argc, char** argv) {
 
 	// DEBUG
 	if (debug){
+		cout << "\nInput Report: " << endl;
 		cout << "b = " << b << endl;
 		cout << "c = " << c << endl;
 		cout << "v = " << v << endl;
@@ -66,33 +63,20 @@ int main(int argc, char** argv) {
 
 
 	// Look up the first verse base on reference and display the result.
-	//cout << "--------------------------------------------------" << endl;
 	verse = webBible.lookup(ref, result);
 	count++;
 	curVNum = ref.getVerse();
 
 	// DEBUG
-	if ( true ) {
-		cout << "RESULT STATUS: " << result << endl;
+	if ( debug ) {
+		cout << "\nRESULT STATUS: ";
 		if (result == SUCCESS) {cout << "SUCCESS" << endl;}
 		if (result == NO_VERSE) {cout << "NO_VERSE"<< endl;}
 		if (result == NO_CHAPTER) {cout << "NO_CHAPTER" << endl;}
 		if (result == NO_BOOK) {cout << "NO_BOOK" << endl;}
 	}
-	// Report Verse
-/*	if (!(verse.getRef() == ref)){
-		ref.displayNonExisted();
-		cout << endl;
 
-		if (result != SUCCESS){
-			cout << webBible.error(result) << endl;
-		}
-		exit(2);
-	} else {
-		verse.display();
-		cout << endl;
-	}
-*/
+	// Report Verse
 	if (!(verse.getRef() == ref)){
 		ref.displayNonExisted();
 		cout << "\n" << webBible.error(result) << endl;
