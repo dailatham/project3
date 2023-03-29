@@ -4,6 +4,7 @@
 #include "Ref.h"
 #include <iostream>
 #include <string>
+#include <sstream>
 using namespace std;
 
 // GetNextToken - general routine for getting next token from a string
@@ -183,4 +184,10 @@ void Ref::displayBookNameCh() {
 void Ref::displayVerse() { 	
      cout << verse;
 }
+std::string Ref::toString() const {
+	std::stringstream ss;
+	ss << book << ":" << chap << ":" << verse;
+	return ss.str();
+}
+
 

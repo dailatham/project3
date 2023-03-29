@@ -44,6 +44,10 @@ public:
    void displayBookNameCh();
    void displayVerse();	
 
+   // Get ref as string
+   std::string toString() const;
+
+
 };
 
 #endif //Ref_H
