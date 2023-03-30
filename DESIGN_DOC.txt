@@ -1,4 +1,11 @@
-Request Pipe Format: [book number]:[chapter number];[verse number];[number of verse] 
+Request Pipe Format:	book + ":" + chapter + ":" + verse + ":" + num_verse 
 
-Reply Pipe Format: [book number]:[chapter number];[verse number];[verse text] 
+Reply Pipe Format:	book + ":" + chapter + ":" + verse + ":" + num_verse + ":" + statusCode
 
+==============================================================================
+NOTE for reply::	Format for no chapter	= 0:0:0:No chapter found.:2
+			Format for no verse	= 0:0:0:No verse found.:3
+
+			using status code "2" as no chapter.
+			using status code "3" as no verse.
+			using status code "0" as SUCCESS

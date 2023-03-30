@@ -190,19 +190,19 @@ Verse Bible::nextVerse(LookupResult& status) {
 string Bible::error(LookupResult status) {
 	//DAISY
 	if (status == NO_BOOK) {
-		return "Error : No book found.";
+		return "No book found.";
 	}
 	else if (status == NO_CHAPTER) {
-		return "Error : No chapter found.";
+		return "No chapter found.";
 	}
 	else if (status == NO_VERSE) {
-		return "Error : No verse found.";
+		return "No verse found.";
 	}
 	else if (status == OTHER) {
-		return "Error : Unspecified";
+		return "Unspecified";
 	}
 	else {
-		return "!!Error: something is VERY WRONG!!";
+		return "Something is VERY WRONG";
 	}
 }
 

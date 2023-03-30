@@ -15,7 +15,7 @@
 #include "fifo.h"
 #include "Ref.h"
 #include "Verse.h"
-#include "Bible.h" 
+#include "Bible.h"
 #include <stdio.h>
 #include "logfile.h"
 #include <string.h>
@@ -29,8 +29,6 @@ string send_pipe = "reply";
 
 //Server main line,create name MAP, wait for and serve requests
 int main() {
-//	string receive_pipe = "request";
-//	string send_pipe = "reply";
 
 	#ifdef logging
 		logFile.open(logFilename.c_str(), ios::out);
@@ -49,14 +47,13 @@ int main() {
 	recfifo.openread();
 	log("Open request fifo");
 
-        bool debug = true;
-
-	while (1) { 
+	while (1) {
 		// Process request
 		string results = "";
 		string tokenValue[4];
+	        bool debug = false;
 
-		cout << "" << endl;
+		cout << "===========================================" << endl;
 		cout << "Waiting for request..." << endl;
 
 		// Get a message from a client
@@ -102,20 +99,19 @@ int main() {
 
 		// Create Ref
 		Ref ref(b, c, v);
-		cout << "Ref is create" << endl;
+		cout << "...Ref created." << endl;
 		Verse lVerse;
 		LookupResult result = OTHER;
 		bool verseExist;
 
-		cout << "Now processing..." << endl;
+		cout << "...Now processing..." << endl;
 
 		sendfifo.openwrite(); // Open write to client 
-		cout << "sendfifo.openwrite()" << endl;
+		cout << "...sendfifo.openwrite()" << endl;
 
 		// Return Verse(s)
-		cout << "now doing look up..." << endl;
 		lVerse = webBible.lookup(ref, result);
-		cout << "bible lookup is done." << endl;
+		cout << "...Bible lookup is done." << endl;
 	        count++;
 	        curVNum = ref.getVerse();
 
@@ -133,18 +129,16 @@ int main() {
 			verseExist = false;
         	        string error = webBible.error(result);
 
-                        Verse noVerse;
                         stringstream ss;
                         ss.flush();
                         ss.clear();
 
-/*
-                        ss << noVerse.getRef().getBook() << ":"
-                                << noVerse.getRef().getChap() << ":"
-                                << noVerse.getRef().getVerse() << ":"
-                                << noVerse.getVerse() << ":" << result << ":";
-*/
-			ss << error;
+//			ss << error << ":" << result;;
+			ss << lVerse.getRef().getBook() << ":"
+                                << lVerse.getRef().getChap() << ":"
+                                << lVerse.getRef().getVerse() << ":"
+                                << error << ":" << result;
+
                         string out = ss.str();
                         sendfifo.send(out);
         	} else {
@@ -155,7 +149,7 @@ int main() {
        	                ss << lVerse.getRef().getBook() << ":"
                         	<< lVerse.getRef().getChap() << ":"
                                 << lVerse.getRef().getVerse() << ":"
-                                << lVerse.getVerse() << ":" << result << ":";
+                                << lVerse.getVerse() << ":" << result;
 
                         out = ss.str();
                         sendfifo.send(out);
@@ -175,7 +169,7 @@ int main() {
                         	ss << lVerse.getRef().getBook() << ":"
                         	        << lVerse.getRef().getChap() << ":"
                         	        << lVerse.getRef().getVerse() << ":"
-                        	        << lVerse.getVerse() << ":" << result << ":";
+                        	        << lVerse.getVerse() << ":" << result;
 
                         	out = ss.str();
                         	sendfifo.send(out);
@@ -185,101 +179,9 @@ int main() {
                 	}
 */      	}
 
-        	// Bible.cpp next function
-/*        	bool displayNextRef = false;
-
-        	if (displayNextRef) {
-        	Ref nextRef = webBible.next(ref, result);
-        	nextRef.displayBookNameCh();
-        	cout << endl;
-        	nextRef.displayVerse();
-        	cout << endl;
-        	}
-*/
-/*		if (result != SUCCESS) {
-			cout << "result != SUCCESS" << endl;
-
-			Verse noVerse;
-			stringstream ss;
-
-			ss << noVerse.getRef().getBook() << ":"
-				<< noVerse.getRef().getChap() << ":"
-				<< noVerse.getRef().getVerse() << ":"
-				<< noVerse.getVerse() << ":" << result << ":";
-
-			string out = ss.str();
-			sendfifo.send(out);
-		}
-		else { // successful search
-			cout << "result == SUCCESS" << endl;
-
-			int numVerses = nv;
-			if (numVerses <= 0) {
-				Verse noVerse;
-				stringstream ss;
-
-				ss << noVerse.getRef().getBook() << ":"
-					<< noVerse.getRef().getChap() << ":"
-					<< noVerse.getRef().getVerse() << ":"
-					<< noVerse.getVerse() << ":" << result << ":";
-
-				string out = ss.str();
-				sendfifo.send(out);
-			}
-			else {
-				if (result != SUCCESS) {
-					Verse noVerse;
-					stringstream ss;
-
-					ss << noVerse.getRef().getBook() << ":"
-						<< noVerse.getRef().getChap() << ":"
-						<< noVerse.getRef().getVerse() << ":"
-						<< noVerse.getVerse() << ":" << result << ":";
-
-					string out = ss.str();
-					sendfifo.send(out);
-				}
-				else {
-					string out = "";
-					stringstream ss;
-
-					ss << lVerse.getRef().getBook() << ":"
-						<< lVerse.getRef().getChap() << ":"
-						<< lVerse.getRef().getVerse() << ":"
-						<< lVerse.getVerse() << ":" << result << ":";
-
-					out = ss.str();
-					sendfifo.send(out);
-					ss.flush();
-					ss.clear();
-
-					if (numVerses > 0) {
-						for (int i = 1; i < numVerses; i++) { 
-							string out2 = "";
-							stringstream ss2;
-							Verse verseNext = webBible.nextVerse(result);
-
-							ss2 << verseNext.getRef().getBook() << ":"
-								<< verseNext.getRef().getChap() << ":"
-								<< verseNext.getRef().getVerse() << ":"
-								<< verseNext.getVerse() << ":" << result << ":";
-
-							out2 = ss2.str();
-							sendfifo.send(out2);
-							ss2.flush();
-							ss2.clear();
-							if (result != SUCCESS) {
-								break;
-							}
-						}
-					}
-				}
-			}
-		}
-*/
 		sendfifo.fifoclose();  // Close send pipe
 		log("close reply fifo");
-		cout << "Process complete" << endl;
+		cout << "\n...Process complete." << endl;
 	}
 //	recfifo.fifoclose();
 //	log("close request fifo");
