@@ -1,0 +1,4 @@
+Request Pipe Format: [book number]:[chapter number];[verse number];[number of verse] 
+
+Reply Pipe Format: [book number]:[chapter number];[verse number];[verse text] 
+

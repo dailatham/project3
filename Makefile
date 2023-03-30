@@ -18,17 +18,23 @@ USER= dailatham
 CC= g++
 CFLAGS= -g -std=c++11
 
-all: $(PutCGI) $(PutHTML) testreader bblookupserver bibleindex.cgi PutCGI PutHTML
+all: $(PutCGI) $(PutHTML) bblookupserver #PutCGI PutHTML
 
 
 bblookupserver.o: 	bblookupserver.cpp fifo.h Ref.h Verse.h Bible.h
-			g++ -c bblookupserver.cpp
+			$(CC) $(CFLAGS) -c bblookupserver.cpp
 
 bblookupserver: 	bblookupserver.o fifo.o Ref.o Verse.o Bible.o
-			g++ -o bblookupserver bblookupserver.o fifo.o Ref.o Verse.o Bible.o
+			$(CC) $(CFLAGS) -o bblookupserver bblookupserver.o fifo.o Ref.o Verse.o Bible.o
+
+#bblookupclient.o: 	bblookupclient.cpp fifo.h
+#			$(CC) $(CFLAGS) -c bblookupclient.cpp
+
+#bblookupclient: 	bblookupclient.o fifo.o
+#			$(CC) $(CFLAGS) -o bblookupclient bblookupclient.o fifo.o -L/usr/local/lib –lcgicc
 
 fifo.o: 		fifo.cpp fifo.h
-			g++ -c fifo.cpp
+			$(CC) $(CFLAGS) -c fifo.cpp
 
 # Ref Object
 Ref.o : Ref.h Ref.cpp
@@ -49,18 +55,17 @@ testreader.o: Ref.o Verse.o Bible.o testreader.cpp
 testreader: testreader.o
 	$(CC) $(CFLAGS) -o testreader testreader.o Ref.o Verse.o Bible.o
 
-#PutCGI:	bibleindex.cgi
-#		chmod 755 bblookupclient.cgi
-#		cp bibleindex.cgi /var/www/html/class/csc3004/$(USER)/cgi-bin
-
+#PutCGI: bblookupclient
+#		chmod 757 bblookupclient
+#		cp bblookupclient /var/www/html/class/csc3004/$(USER)/cgi-bin
 #		echo "Current contents of your cgi-bin directory: "
 #		ls -l /var/www/html/class/csc3004/$(USER)/cgi-bin/
 
-#PutHTML:
-#		cp bibleindex.html /var/www/html/class/csc3004/$(USER)
-
+#PutHTML: bibleindex.html
+#		cp bibleindex.html  /var/www/html/class/csc3004/$(USER)
 #		echo "Current contents of your HTML directory: "
-#		ls -l /var/www/html/class/csc3004/$(USER)
+#		ls -l  /var/www/html/class/csc3004/$(USER)
 
 clean:
-		rm *.o core testreader bblookupserver
+		rm *.o corebblookupserver
+

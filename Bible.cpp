@@ -127,6 +127,7 @@ Verse Bible::lookup(Ref ref, LookupResult& status) {
     bibleIter = index.find(ref); 
     if (bibleIter != index.end()) {
  	returnValue = bibleIter->second;
+	instream.clear(); 
    	instream.seekg(returnValue);
     	getline(instream, line);
     	aVerse = Verse(line);

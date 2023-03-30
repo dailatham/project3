@@ -77,32 +77,56 @@ Ref bblookupclient::prev(const Ref &ref, LookupResult &result) {
 
 
 
-
 #include <iostream>
 #include <stdio.h>
 #include <string.h>
-#include <sstream>
-using namespace std;
 
-// Required libraries for AJAX to function 
+// Required libraries for AJAX to function
 #include "/home/class/csc3004/cgicc/Cgicc.h"
 #include "/home/class/csc3004/cgicc/HTTPHTMLHeader.h"
 #include "/home/class/csc3004/cgicc/HTMLClasses.h"
 using namespace cgicc;
 
+//Stuff for pipes
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <list>
+#include "fifo.h"
+using namespace std;
+
 // Required file from Project1
-#include "Bible.h"
-#include "Ref.h"
-#include "Verse.h"
+//#include "Bible.h"
+//#include "Ref.h"
+//#include "Verse.h"
 
 #define logging // enable log file
 #include "logfile.h"
-#include "fifo.h"
+
+// Pipes for communication
+string receive_pipe = "SSreply";
+string send_pipe = "SSrequest";
+
+//========================================================================================
 
 int main() {
-  cout << "Content-Type: text/plain\n\n";
+  // prepare the response output,
+  // send required header before any other output
+  cout << "Content-Type: text/plain\n\n" << endl;
 
   Cgicc cgi;  // create object used to access CGI request data
+//  form_iterator sstring = cgi.getElement("sstring");
+//  string searchString = **sstring;
+//  int length = searchString.length();
+
+  Fifo recfifo(receive_pipe);
+  Fifo sendfifo(send_pipe);
 
   #ifdef logging
 	logFile.open(logFilename.c_str(), ios::out);
@@ -202,8 +226,8 @@ int main() {
   string out = "";
 
   // Call server to get results  
-//  ss << ref.getBook() << "&" << ref.getChap() << "&" << ref.getVerse() << "&" << nv << "&";
-//  out = ss.str();
+  ss << ref.getBook() << "&" << ref.getChap() << "&" << ref.getVerse() << "&" << nv << "&";
+  out = ss.str();
   sendfifo.openwrite();
   sendfifo.send(out); // Send info as one long string to be split in Server
   log("Request sent to server: " << ss.str() << '\n');
