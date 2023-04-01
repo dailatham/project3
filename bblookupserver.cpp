@@ -146,7 +146,10 @@ int main() {
 			string out = "";
                         stringstream ss;
 
-       	                ss << lVerse.getRef().getBook() << ":"
+//			int bookNum = lVerse.getRef().getBook();
+//			string bookName = to_string(bookNum);
+			string bookName = lVerse.getRef().getBookName();
+       	                ss << bookName << ":"
                         	<< lVerse.getRef().getChap() << ":"
                                 << lVerse.getRef().getVerse() << ":"
                                 << lVerse.getVerse() << ":" << result;
@@ -166,7 +169,10 @@ int main() {
                         	string out = "";
                         	stringstream ss;
 
-                        	ss << lVerse.getRef().getBook() << ":"
+//				int bookNum = lVerse.getRef().getBook();
+//				string bookName = to_string(bookNum);
+				string bookName = lVerse.getRef().getBookName();
+                        	ss << bookName << ":"
                         	        << lVerse.getRef().getChap() << ":"
                         	        << lVerse.getRef().getVerse() << ":"
                         	        << lVerse.getVerse() << ":" << result;

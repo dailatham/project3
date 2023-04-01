@@ -18,7 +18,7 @@ USER= dailatham
 CC= g++
 CFLAGS= -g -std=c++11
 
-all: $(PutCGI) $(PutHTML) bblookupserver #PutCGI PutHTML
+all: $(PutCGI) $(PutHTML) bblookupserver bblookupclient.cgi PutCGI PutHTML
 
 
 bblookupserver.o: 	bblookupserver.cpp fifo.h Ref.h Verse.h Bible.h
@@ -27,10 +27,11 @@ bblookupserver.o: 	bblookupserver.cpp fifo.h Ref.h Verse.h Bible.h
 bblookupserver: 	bblookupserver.o fifo.o Ref.o Verse.o Bible.o
 			$(CC) $(CFLAGS) -o bblookupserver bblookupserver.o fifo.o Ref.o Verse.o Bible.o
 
-#bblookupclient.o: 	bblookupclient.cpp fifo.h
-#			$(CC) $(CFLAGS) -c bblookupclient.cpp
+bblookupclient.o: 	bblookupclient.cpp fifo.h logfile.h
+			$(CC) $(CFLAGS) -c bblookupclient.cpp
 
-#bblookupclient: 	bblookupclient.o fifo.o
+bblookupclient.cgi: 	bblookupclient.o fifo.o 
+			$(CC) $(CFLAGS) -o bblookupclient.cgi bblookupclient.o fifo.o -L/usr/local/lib -lcgicc
 #			$(CC) $(CFLAGS) -o bblookupclient bblookupclient.o fifo.o -L/usr/local/lib –lcgicc
 
 fifo.o: 		fifo.cpp fifo.h
@@ -55,17 +56,16 @@ testreader.o: Ref.o Verse.o Bible.o testreader.cpp
 testreader: testreader.o
 	$(CC) $(CFLAGS) -o testreader testreader.o Ref.o Verse.o Bible.o
 
-#PutCGI: bblookupclient
-#		chmod 757 bblookupclient
-#		cp bblookupclient /var/www/html/class/csc3004/$(USER)/cgi-bin
-#		echo "Current contents of your cgi-bin directory: "
-#		ls -l /var/www/html/class/csc3004/$(USER)/cgi-bin/
+PutCGI: bblookupclient.cgi
+		chmod 757 bblookupclient.cgi
+		cp bblookupclient.cgi /var/www/html/class/csc3004/$(USER)/cgi-bin
+		echo "Current contents of your cgi-bin directory: "
+		ls -l /var/www/html/class/csc3004/$(USER)/cgi-bin/
 
-#PutHTML: bibleindex.html
-#		cp bibleindex.html  /var/www/html/class/csc3004/$(USER)
-#		echo "Current contents of your HTML directory: "
-#		ls -l  /var/www/html/class/csc3004/$(USER)
+PutHTML: bibleindex.html
+		cp bibleindex.html  /var/www/html/class/csc3004/$(USER)
+		echo "Current contents of your HTML directory: "
+		ls -l  /var/www/html/class/csc3004/$(USER)
 
 clean:
-		rm *.o corebblookupserver
-
+		rm *.o core bblookupserver bblookupclient.cgi

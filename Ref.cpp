@@ -109,7 +109,7 @@ static string book_names[67] = {"","Genesis",
 int Ref::getBook() {return book;}	 // Access book number
 int Ref::getChap() {return chap;}	 // Access chapter number
 int Ref::getVerse() {return verse;}; 	// Access verse number
-//string Ref::getBookName() {return book_name[book];}
+string Ref::getBookName() {return book_names[book];}
 
 // TO DO: implement comparison functions
 // REQUIRED: == comparison
@@ -189,5 +189,4 @@ std::string Ref::toString() const {
 	ss << book << ":" << chap << ":" << verse;
 	return ss.str();
 }
-
 

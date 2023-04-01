@@ -55,7 +55,7 @@ function getresponse () {
 		return;
 	}
 	// NOTE: This page must be loaded from cs.mvnu.edu to avoid a cross-origin request violation.
-	XMLHttp.open("GET", "/class/csc3004/dailatham/cgi-bin/bibleajax.cgi?"
+	XMLHttp.open("GET", "/class/csc3004/dailatham/cgi-bin/bblookupclient.cgi?"
 		+ "search_type=" + searchType.value
 		+ "&book=" + document.getElementById('book').value
 		+ "&chapter=" + document.getElementById('chapter').value

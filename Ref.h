@@ -29,7 +29,7 @@ public:
    int getBook();	// Access book number
    int getChap();	// Access chapter number
    int getVerse();	// Access verse number
-//   string getBookName();
+   string getBookName();
 
    // REQUIRED Comparison: determine if two references are equal
    bool operator==(const Ref);
