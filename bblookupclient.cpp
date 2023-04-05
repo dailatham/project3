@@ -145,6 +145,7 @@ int main() {
   string results = "";
 
 int i = 0;
+int curV, prevV;
 while (i < Numv) {
   // receive results from te server.
   results = recfifo.recv();
@@ -153,7 +154,7 @@ while (i < Numv) {
   string recvB, str, recvVtext;
   int recvC, recvV, recvS = 0;
   int po = 1;
-  bool debug = true;
+  bool debug = false;
 
   stringstream recvSS(results);
 
@@ -186,6 +187,8 @@ while (i < Numv) {
 			break;
   	}
   }
+  curV = recvV;
+  prevV = curV;
 
   // DEBUG
   if (debug) {
@@ -197,16 +200,20 @@ while (i < Numv) {
   }
 
   // Report Output
- // int count = 0;
- // while (count < Numv) {
-	if (recvS != 0) {
-		cout << recvVtext << endl;
-  	} else {
+  if (recvS != 0) {
+	cout << recvVtext << endl;
+  } else {
+	if  (po == 1 || curV < prevV) {
 		cout << recvB << ":" <<
-		 recvC << ":" <<
-		 recvV << ":" <<
-		 recvVtext << endl;
+		recvC << ":" <<
+		recvV << ":" <<
+		recvVtext << endl;
+	} else {
+		cout << recvC << ":" <<
+		recvV << ":" <<
+		recvVtext << endl;
 	}
+  }
 i++;
 //  	count++;
 //  cout << results << endl;
@@ -217,69 +224,8 @@ i++;
   log("Close reply fifo.");
   sendfifo.fifoclose();
   log("Close request fifo.");
- 
+
  return 0;
-/*
-  // if all of the input are valid
-  if (validInput) {
-	cout << "Search Type: <b>" << **st << "</b><br>" << endl;
-  }
-  // else print out an error
-  else {
-	cout << "<p>Invalid Input: <em>report the more specific problem.</em></p>" << endl;
-	exit(2);
-  }
-
-  // if the verse doesn't exist print an error
-  if (!(verseResult.getRef() == ref)) {
-	cout << "<br><b>" << endl;
-	ref.displayNonExisted();
-	cout << "</b>" << endl;
-
-	if (result != SUCCESS){
-		cout << "<br><b>" << endl;
-		cout << webBible.error(result) << endl;
-		cout << "</b>" << endl;
-	}
-	exit(2);
-  }
-  // else display the result.
-  else {
-	cout << "<br><b>" << endl;
-	ref.displayBookNameCh();
-	cout << "</b><br>" << **verse << " : " << verseResult.getVerse() << endl;
-	// update the current verse number
-	curV = verseResult.getVerseNum();
-  }
-*/
-/*
-  // Only apply on multi-verse case, keep looking for the next verse while the count is less than or equal to the verse number. 
-  if (Numv > 1){
-        do {
-		// look up from ref
-		verseResult = webBible.nextVerse(result);
-                count++;
-
-		// update the previous and current verse number
-		prevV = curV;
-		curV = verseResult.getVerseNum();
-
-		// update current ref
-		curRef = verseResult.getRef();
-
-		if (curV < prevV) {
-			cout << "<br><br><b>" << endl;
-			curRef.displayBookNameCh();
-			cout << "</b><br>" << verseResult.getVerseNum() << " : " << verseResult.getVerse();
-			cout << "\n" << endl;
-		}
-		else {
-			cout << "<br>" << verseResult.getVerseNum() << " : " << verseResult.getVerse(); 
-	              	cout << "\n" << endl;
-		}
-        } while (count != Numv);
-   }
-*/
 
 }
 
