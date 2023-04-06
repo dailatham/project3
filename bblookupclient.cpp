@@ -123,7 +123,7 @@ int main() {
   stringstream ss1;
   string out = "";
 
-  ss << bookNum << ":" << chapterNum << ":" << verseNum << ":" << Numv;
+  ss << bookNum << "&" << chapterNum << "&" << verseNum << "&" << Numv;
   out = ss.str();
 
   sendfifo.openwrite();
@@ -132,11 +132,6 @@ int main() {
   // call server to get results
   sendfifo.send(out);
   log("Request sent to server: " << ss.str());
-/*
-  ss.flush();
-  ss.clear();
-  cout << endl;
-*/
 
   recfifo.openread();
   log("Open reply fifo.");
@@ -149,7 +144,7 @@ int count = 1;
 int curV, prevV = 0;
 //while (i < Numv) {
 for (int i = 0; i < Numv; i++) {
-cout << "<br>i = " << i << endl;
+//cout << "<br>i = " << i << endl;
   // receive results from te server.
   results = recfifo.recv();
 
@@ -161,7 +156,7 @@ cout << "<br>i = " << i << endl;
 
   stringstream recvSS(results);
 
-  while (getline(recvSS, str, ':')) {
+  while (getline(recvSS, str, '&')) {
 	// DEBUG
 	if (debug) {
 		cout << "str = " << str << endl;
@@ -210,10 +205,10 @@ cout << "<br>i = " << i << endl;
 	if  (count == 1 || curV < prevV) {
 		if (count > 1) { cout << "<br><br>" << endl;}
 		cout << "<b>" << recvB << " "<< recvC << "</b><br>" <<
-		recvV << ":" <<
+		recvV << ": " <<
 		recvVtext << endl;
 	} else {
-		cout << "<br>" << recvV << ":" <<
+		cout << "<br>" << recvV << ": " <<
 		recvVtext << endl;
 	}
   }
