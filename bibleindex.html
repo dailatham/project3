@@ -55,7 +55,7 @@ function getresponse () {
 		return;
 	}
 	// NOTE: This page must be loaded from cs.mvnu.edu to avoid a cross-origin request violation.
-	XMLHttp.open("GET", "/class/csc3004/dailatham/cgi-bin/bibleajax.cgi?"
+	XMLHttp.open("GET", "/class/csc3004/dailatham/cgi-bin/bblookupclient.cgi?"
 		+ "search_type=" + searchType.value
 		+ "&book=" + document.getElementById('book').value
 		+ "&chapter=" + document.getElementById('chapter').value
@@ -74,7 +74,7 @@ function getresponse () {
 </script>
 
 <body>
-<h1>Bible Search Test Form</h1>
+<h1>Bible Index Search Test Form</h1>
 <h3>Select which type of search you would like to perform:</h3>
 <table>
 <tr>

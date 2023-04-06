@@ -47,7 +47,7 @@ int main() {
 	recfifo.openread();
 	log("Open request fifo");
 
-	while (1) {
+	while (true) {
 		// Process request
 		string results = "";
 		string tokenValue[4];
@@ -65,16 +65,16 @@ int main() {
 		// Ensure that the request string contains enough tokens
 		int num_colons = 0;
 		for (char c : results) {
-			if (c == ':') {
+			if (c == '&') {
         			num_colons++;
     			}
 		}
 
 		// Assign each data
-		tokenValue[0] = GetNextToken(results, ":"); // Book
-		tokenValue[1] = GetNextToken(results, ":"); // Chap
-		tokenValue[2] = GetNextToken(results, ":"); // Verse
-		tokenValue[3] = GetNextToken(results, ":"); // Number of verses
+		tokenValue[0] = GetNextToken(results, "&"); // Book
+		tokenValue[1] = GetNextToken(results, "&"); // Chap
+		tokenValue[2] = GetNextToken(results, "&"); // Verse
+		tokenValue[3] = GetNextToken(results, "&"); // Number of verses
 
 		// Parse string into usable variables for request
 		int b = stoi(tokenValue[0]);
@@ -133,11 +133,11 @@ int main() {
                         ss.flush();
                         ss.clear();
 
-//			ss << error << ":" << result;;
-			ss << lVerse.getRef().getBook() << ":"
-                                << lVerse.getRef().getChap() << ":"
-                                << lVerse.getRef().getVerse() << ":"
-                                << error << ":" << result;
+//			ss << error << "&" << result;;
+			ss << lVerse.getRef().getBook() << "&"
+                                << lVerse.getRef().getChap() << "&"
+                                << lVerse.getRef().getVerse() << "&"
+                                << error << "&" << result;
 
                         string out = ss.str();
                         sendfifo.send(out);
@@ -146,10 +146,13 @@ int main() {
 			string out = "";
                         stringstream ss;
 
-       	                ss << lVerse.getRef().getBook() << ":"
-                        	<< lVerse.getRef().getChap() << ":"
-                                << lVerse.getRef().getVerse() << ":"
-                                << lVerse.getVerse() << ":" << result;
+//			int bookNum = lVerse.getRef().getBook();
+//			string bookName = to_string(bookNum);
+			string bookName = lVerse.getRef().getBookName();
+       	                ss << bookName << "&"
+                        	<< lVerse.getRef().getChap() << "&"
+                                << lVerse.getRef().getVerse() << "&"
+                                << lVerse.getVerse() << "&" << result;
 
                         out = ss.str();
                         sendfifo.send(out);
@@ -166,10 +169,13 @@ int main() {
                         	string out = "";
                         	stringstream ss;
 
-                        	ss << lVerse.getRef().getBook() << ":"
-                        	        << lVerse.getRef().getChap() << ":"
-                        	        << lVerse.getRef().getVerse() << ":"
-                        	        << lVerse.getVerse() << ":" << result;
+//				int bookNum = lVerse.getRef().getBook();
+//				string bookName = to_string(bookNum);
+				string bookName = lVerse.getRef().getBookName();
+                        	ss << bookName << "&"
+                        	        << lVerse.getRef().getChap() << "&"
+                        	        << lVerse.getRef().getVerse() << "&"
+                        	        << lVerse.getVerse() << "&" << result;
 
                         	out = ss.str();
                         	sendfifo.send(out);

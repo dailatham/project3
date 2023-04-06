@@ -1,81 +1,3 @@
-/*
-#include <sstream>
-
-#include "bblookupclient.h"
-#include "Ref.h"
-
-bblookupclient::bblookupclient(std::string pipe_request_id, std::string pipe_reply_id, std::string bibleVersion) : pipe_request(pipe_request_id), pipe_reply(pipe_reply_id), bibleVersion(bibleVersion) {}
-
-bblookupclient::ServerReply bblookupclient::request(std::string action, const Ref &ref) {
-	ServerReply reply;
-
-	//  Construct the request and send it. 
-	pipe_request.openwrite();
-	std::stringstream out;
-	out << bibleVersion << " " << action << " " << ref.toString();
-	pipe_request.send(out.str());
-	pipe_request.fifoclose();
-
-	// Receive the server's reply. 
-	pipe_reply.openread();
-	std::string replyText = pipe_reply.recv();
-	pipe_reply.fifoclose();
-
-	// Split the reply.
-	std::string statusText = GetNextToken(replyText, " ");
-	std::string verseText = replyText; // The rest of the reply is the verse line (including ref and text).
-
-	// Convert the reply.
-	reply.result = static_cast<LookupResult>(atoi(statusText.c_str()));
-	reply.ref = Ref(verseText);
-	reply.verseText = verseText;
-
-	return reply;
-}
-
-Verse bblookupclient::lookup(const Ref &ref, LookupResult &result) {
-	ServerReply reply = request("lookup", ref);
-
-	result = reply.result;
-	return Verse(reply.verseText);
-}
-
-Ref bblookupclient::next(const Ref &ref, LookupResult &result) {
-	ServerReply reply = request("next", ref);
-
-	result = reply.result;
-	return reply.ref;
-}
-
-Ref bblookupclient::prev(const Ref &ref, LookupResult &result) {
-	ServerReply reply = request("prev", ref);
-
-	result = reply.result;
-	return reply.ref;
-}
-
-
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #include <iostream>
 #include <stdio.h>
@@ -101,19 +23,15 @@ using namespace cgicc;
 #include "fifo.h"
 using namespace std;
 
-// Required file from Project1
-//#include "Bible.h"
-//#include "Ref.h"
-//#include "Verse.h"
+//#include <Bible.h>
 
 #define logging // enable log file
+#define LOG_FILENAME "/home/class/csc3004/tmp/dailatham-bblookup.log"
 #include "logfile.h"
 
 // Pipes for communication
-string receive_pipe = "SSreply";
-string send_pipe = "SSrequest";
-
-//========================================================================================
+string receive_pipe = "reply";
+string send_pipe = "request";
 
 int main() {
   // prepare the response output,
@@ -121,9 +39,6 @@ int main() {
   cout << "Content-Type: text/plain\n\n" << endl;
 
   Cgicc cgi;  // create object used to access CGI request data
-//  form_iterator sstring = cgi.getElement("sstring");
-//  string searchString = **sstring;
-//  int length = searchString.length();
 
   Fifo recfifo(receive_pipe);
   Fifo sendfifo(send_pipe);
@@ -131,8 +46,6 @@ int main() {
   #ifdef logging
 	logFile.open(logFilename.c_str(), ios::out);
   #endif
-
-  log("Request recieved" << '\n');
 
   // GET THE INPUT DATA
   // browser sends us a string of field name/value pairs from HTML form
@@ -196,7 +109,7 @@ int main() {
   if (nv != cgi.getElements().end()) {
         Numv = nv->getIntegerValue();
          if (Numv <= 0) {
-                 cout << "<p>The numer of verse must be at least.</p>" << endl;
+                 cout << "<p>The numer of verse must be 1 or above.</p>" << endl;
                  validInput = false;
 		 exit(2);
         }
@@ -205,108 +118,118 @@ int main() {
         }
   }
 
-  // Create a reference from the numbers;
-  Ref ref(bookNum, chapterNum, verseNum);
-
-  // Create Bible object to process the raw text file
-  Bible webBible("/home/class/csc3004/Bibles/web-complete");
-  Verse verseResult;
-  LookupResult result;
-  int count = 0;	// help to keep track with multi-verse
-  int prevV, curV; 	// keep track of pervious and current verse
-  Ref curRef;		// keep track of current ref 
-
   /////////////////////// P3pt2 
-  string receive_pipe = "reply";
-  string send_pipe = "request";
-  Fifo recfifo(receive_pipe);
-  Fifo sendfifo(send_pipe);
   stringstream ss;
   stringstream ss1;
   string out = "";
 
-  // Call server to get results  
-  ss << ref.getBook() << "&" << ref.getChap() << "&" << ref.getVerse() << "&" << nv << "&";
+  ss << bookNum << "&" << chapterNum << "&" << verseNum << "&" << Numv;
   out = ss.str();
+
   sendfifo.openwrite();
-  sendfifo.send(out); // Send info as one long string to be split in Server
-  log("Request sent to server: " << ss.str() << '\n');
-  ss.flush();
-  ss.clear();
-  cout << endl;
-  sendfifo.fifoclose();
+  log("\tOpen request pipe.");
+
+  // call server to get results
+  sendfifo.send(out);
+  log("\tRequest sent to server: " << ss.str());
+
   recfifo.openread();
+  log("\tOpen reply fifo.");
+
+ // output the response to the web page
   string results = "";
-  results = recfifo.recv(); // update to go outside the loop BUT it DO BE unoptimized. Consider server sending seperate message for each
-  // recfifo.fifoclose();
-  log("Results from server recieved: " << results << '\n');
 
-  // Look up the first verse base on reference and display the result.
-  verseResult = webBible.lookup(ref, result);
-  count++;
+  int count = 1;
+  int curV, prevV = 0;
 
-  // if all of the input are valid
-  if (validInput) {
-	cout << "Search Type: <b>" << **st << "</b><br>" << endl;
-  }
-  // else print out an error
-  else {
-	cout << "<p>Invalid Input: <em>report the more specific problem.</em></p>" << endl;
-	exit(2);
-  }
+  for (int i = 0; i < Numv; i++) {
+	log("\t...IN THE FOR-LOOP...i : " << i);
 
-  // if the verse doesn't exist print an error
-  if (!(verseResult.getRef() == ref)) {
-	cout << "<br><b>" << endl;
-	ref.displayNonExisted();
-	cout << "</b>" << endl;
+  	// receive results from te server.
+ 	results = recfifo.recv();
+	log("\tReceive result: " << results);
 
-	if (result != SUCCESS){
-		cout << "<br><b>" << endl;
-		cout << webBible.error(result) << endl;
-		cout << "</b>" << endl;
-	}
-	exit(2);
-  }
-  // else display the result.
-  else {
-	cout << "<br><b>" << endl;
-	ref.displayBookNameCh();
-	cout << "</b><br>" << **verse << " : " << verseResult.getVerse() << endl;
-	// update the current verse number
-	curV = verseResult.getVerseNum();
-  }
+  	// sperating the string
+  	string recvB, str, recvVtext;
+  	int recvC, recvV, recvS = 0;
+  	int po = 1;
+  	bool debug = false;
 
-  // Only apply on multi-verse case, keep looking for the next verse while the count is less than or equal to the verse number. 
-  if (Numv > 1){
-        do {
-		// look up from ref
-		verseResult = webBible.nextVerse(result);
-                count++;
+  	stringstream recvSS(results);
 
-		// update the previous and current verse number
-		prevV = curV;
-		curV = verseResult.getVerseNum();
+  	while (getline(recvSS, str, '&')) {
+		// DEBUG
+		if (debug) {
+			cout << "str = " << str << endl;
+			cout << "po = " << po << "<br>" << endl;
+  		}
 
-		// update current ref
-		curRef = verseResult.getRef();
+   		switch (po) {
+  			case 1:
+				recvB = str;
+				po++;
+				break;
+			case 2:
+				recvC = stoi(str);
+				po++;
+				break;
+			case 3: recvV = stoi(str);
+				po++;
+				break;
+			case 4:
+				recvVtext = str;
+				po++;
+				break;
+			case 5:
+				recvS = stoi(str);
+				po++;
+				break;
+	  	}
+	  }
+    	  log("\tSUCCESS seperating the result");
+	  curV = recvV;
 
-		if (curV < prevV) {
-			cout << "<br><br><b>" << endl;
-			curRef.displayBookNameCh();
-			cout << "</b><br>" << verseResult.getVerseNum() << " : " << verseResult.getVerse();
-			cout << "\n" << endl;
+	  // DEBUG
+	  if (debug) {
+		cout << "<br>recvB = " << recvB << endl;
+		cout << "<br>recvC = " << recvC << endl;
+		cout << "<br>recvV = " << recvV << endl;
+		cout << "<br>recvVtext = " << recvVtext << endl;
+		cout << "<br>recvS = " << recvS << "<br><br>" << endl;
+		cout << "<br>curV = " << curV;
+		cout << "<br>prevV = " << prevV;
+	  }
+
+	  // Report Output
+  	  if (recvS != 0) {
+		cout << recvVtext << endl;
+		log("\tSUCCESS error report");
+		break;
+  	  } else {
+		if  (count == 1 || curV < prevV) {
+			if (count > 1) { cout << "<br><br>" << endl;}
+			cout << "<b>" << recvB << " "<< recvC << "</b><br>" <<
+			recvV << " : " <<
+			recvVtext << endl;
+		} else {
+			cout << "<br>" << recvV << " : " <<
+			recvVtext << endl;
 		}
-		else {
-			cout << "<br>" << verseResult.getVerseNum() << " : " << verseResult.getVerse(); 
-	              	cout << "\n" << endl;
-		}
-        } while (count != Numv);
-   }
+	  }
+	  count++;
+  	  prevV = curV;
+	  log("\tSUCCESS result report");
 
-
-  //return 0;
+	  //cout << "<br>prevV = " << prevV;
+  }
+  log("\t...END OF FOR-LOOP.");
+  cout << endl; // flush output when done
   recfifo.fifoclose();
+  log("\tClose reply fifo.");
+  sendfifo.fifoclose();
+  log("\tClose request fifo.");
+
+ return 0;
 
 }
 
