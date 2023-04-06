@@ -127,14 +127,14 @@ int main() {
   out = ss.str();
 
   sendfifo.openwrite();
-  log("Open request pipe.");
+  log("\tOpen request pipe.");
 
   // call server to get results
   sendfifo.send(out);
-  log("Request sent to server: " << ss.str());
+  log("\tRequest sent to server: " << ss.str());
 
   recfifo.openread();
-  log("Open reply fifo.");
+  log("\tOpen reply fifo.");
 
  // output the response to the web page
   string results = "";
@@ -143,11 +143,11 @@ int main() {
   int curV, prevV = 0;
 
   for (int i = 0; i < Numv; i++) {
-	log("...IN THE FOR-LOOP...i : " << i);
+	log("\t...IN THE FOR-LOOP...i : " << i);
 
   	// receive results from te server.
  	results = recfifo.recv();
-	log("Receive result: " << results);
+	log("\tReceive result: " << results);
 
   	// sperating the string
   	string recvB, str, recvVtext;
@@ -186,7 +186,7 @@ int main() {
 				break;
 	  	}
 	  }
-    	  log("SUCCESS seperating the result");
+    	  log("\tSUCCESS seperating the result");
 	  curV = recvV;
 
 	  // DEBUG
@@ -203,7 +203,7 @@ int main() {
 	  // Report Output
   	  if (recvS != 0) {
 		cout << recvVtext << endl;
-		log("SUCCESS result report");
+		log("\tSUCCESS error report");
 		break;
   	  } else {
 		if  (count == 1 || curV < prevV) {
@@ -218,16 +218,16 @@ int main() {
 	  }
 	  count++;
   	  prevV = curV;
-	  log("SUCCESS result report");
+	  log("\tSUCCESS result report");
 
 	  //cout << "<br>prevV = " << prevV;
   }
-  log("...END OF FOR-LOOP.");
+  log("\t...END OF FOR-LOOP.");
   cout << endl; // flush output when done
   recfifo.fifoclose();
-  log("Close reply fifo.");
+  log("\tClose reply fifo.");
   sendfifo.fifoclose();
-  log("Close request fifo.");
+  log("\tClose request fifo.");
 
  return 0;
 
