@@ -144,9 +144,12 @@ int main() {
  // output the response to the web page
   string results = "";
 
-int i = 0;
-int curV, prevV;
-while (i < Numv) {
+//int i = 0;
+int count = 1;
+int curV, prevV = 0;
+//while (i < Numv) {
+for (int i = 0; i < Numv; i++) {
+cout << "<br>i = " << i << endl;
   // receive results from te server.
   results = recfifo.recv();
 
@@ -188,7 +191,6 @@ while (i < Numv) {
   	}
   }
   curV = recvV;
-  prevV = curV;
 
   // DEBUG
   if (debug) {
@@ -199,22 +201,26 @@ while (i < Numv) {
 	cout << "<br>recvS = " << recvS << "<br><br>" << endl;
   }
 
+//cout << "<br>curV = " << curV;
+//cout << "<br>prevV = " << prevV;
   // Report Output
   if (recvS != 0) {
 	cout << recvVtext << endl;
   } else {
-	if  (po == 1 || curV < prevV) {
-		cout << recvB << ":" <<
-		recvC << ":" <<
+	if  (count == 1 || curV < prevV) {
+		if (count > 1) { cout << "<br><br>" << endl;}
+		cout << "<b>" << recvB << " "<< recvC << "</b><br>" <<
 		recvV << ":" <<
 		recvVtext << endl;
 	} else {
-		cout << recvC << ":" <<
-		recvV << ":" <<
+		cout << "<br>" << recvV << ":" <<
 		recvVtext << endl;
 	}
   }
-i++;
+count++;
+prevV = curV;
+//cout << "<br>prevV = " << prevV;
+//i++;
 //  	count++;
 //  cout << results << endl;
 //  }
