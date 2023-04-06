@@ -18,7 +18,7 @@
  */
 
 #ifdef logging
-const string logFilename = "/home/class/csc3004/tmp/dailatham-bblookupclient.log";
+const string logFilename = "/home/class/csc3004/tmp/dailatham-bblookup.log";
 ofstream logFile;
 string timestamp() {
   time_t _tm = time( NULL );

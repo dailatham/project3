@@ -8,7 +8,8 @@ SUCCESS 1:100:1
 SUCCESS 1:100:1:4
 SUCCESS 1:1:100
 SUCCESS 1:1:100:4
+SUCCESS 1:1:1:100
 
-UPDATE good format
+SUCCESS bblookupclient.cpp
+SUCCESS good format
 
-It only test the bblookupserver.cpp

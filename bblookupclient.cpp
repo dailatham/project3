@@ -109,7 +109,7 @@ int main() {
   if (nv != cgi.getElements().end()) {
         Numv = nv->getIntegerValue();
          if (Numv <= 0) {
-                 cout << "<p>The numer of verse must be at least.</p>" << endl;
+                 cout << "<p>The numer of verse must be 1 or above.</p>" << endl;
                  validInput = false;
 		 exit(2);
         }
@@ -139,87 +139,90 @@ int main() {
  // output the response to the web page
   string results = "";
 
-//int i = 0;
-int count = 1;
-int curV, prevV = 0;
-//while (i < Numv) {
-for (int i = 0; i < Numv; i++) {
-//cout << "<br>i = " << i << endl;
-  // receive results from te server.
-  results = recfifo.recv();
+  int count = 1;
+  int curV, prevV = 0;
 
-  // sperating the string
-  string recvB, str, recvVtext;
-  int recvC, recvV, recvS = 0;
-  int po = 1;
-  bool debug = false;
+  for (int i = 0; i < Numv; i++) {
+	log("...IN THE FOR-LOOP...i : " << i);
 
-  stringstream recvSS(results);
+  	// receive results from te server.
+ 	results = recfifo.recv();
+	log("Receive result: " << results);
 
-  while (getline(recvSS, str, '&')) {
-	// DEBUG
-	if (debug) {
-		cout << "str = " << str << endl;
-		cout << "po = " << po << "<br>" << endl;
-  	}
+  	// sperating the string
+  	string recvB, str, recvVtext;
+  	int recvC, recvV, recvS = 0;
+  	int po = 1;
+  	bool debug = false;
 
-   	switch (po) {
-  		case 1:
-			recvB = str;
-			po++;
-			break;
-		case 2:
-			recvC = stoi(str);
-			po++;
-			break;
-		case 3: recvV = stoi(str);
-			po++;
-			break;
-		case 4:
-			recvVtext = str;
-			po++;
-			break;
-		case 5:
-			recvS = stoi(str);
-			po++;
-			break;
-  	}
+  	stringstream recvSS(results);
+
+  	while (getline(recvSS, str, '&')) {
+		// DEBUG
+		if (debug) {
+			cout << "str = " << str << endl;
+			cout << "po = " << po << "<br>" << endl;
+  		}
+
+   		switch (po) {
+  			case 1:
+				recvB = str;
+				po++;
+				break;
+			case 2:
+				recvC = stoi(str);
+				po++;
+				break;
+			case 3: recvV = stoi(str);
+				po++;
+				break;
+			case 4:
+				recvVtext = str;
+				po++;
+				break;
+			case 5:
+				recvS = stoi(str);
+				po++;
+				break;
+	  	}
+	  }
+    	  log("SUCCESS seperating the result");
+	  curV = recvV;
+
+	  // DEBUG
+	  if (debug) {
+		cout << "<br>recvB = " << recvB << endl;
+		cout << "<br>recvC = " << recvC << endl;
+		cout << "<br>recvV = " << recvV << endl;
+		cout << "<br>recvVtext = " << recvVtext << endl;
+		cout << "<br>recvS = " << recvS << "<br><br>" << endl;
+		cout << "<br>curV = " << curV;
+		cout << "<br>prevV = " << prevV;
+	  }
+
+	  // Report Output
+  	  if (recvS != 0) {
+		cout << recvVtext << endl;
+		log("SUCCESS result report");
+		break;
+  	  } else {
+		if  (count == 1 || curV < prevV) {
+			if (count > 1) { cout << "<br><br>" << endl;}
+			cout << "<b>" << recvB << " "<< recvC << "</b><br>" <<
+			recvV << " : " <<
+			recvVtext << endl;
+		} else {
+			cout << "<br>" << recvV << " : " <<
+			recvVtext << endl;
+		}
+	  }
+	  count++;
+  	  prevV = curV;
+	  log("SUCCESS result report");
+
+	  //cout << "<br>prevV = " << prevV;
   }
-  curV = recvV;
-
-  // DEBUG
-  if (debug) {
-	cout << "<br>recvB = " << recvB << endl;
-	cout << "<br>recvC = " << recvC << endl;
-	cout << "<br>recvV = " << recvV << endl;
-	cout << "<br>recvVtext = " << recvVtext << endl;
-	cout << "<br>recvS = " << recvS << "<br><br>" << endl;
-  }
-
-//cout << "<br>curV = " << curV;
-//cout << "<br>prevV = " << prevV;
-  // Report Output
-  if (recvS != 0) {
-	cout << recvVtext << endl;
-  } else {
-	if  (count == 1 || curV < prevV) {
-		if (count > 1) { cout << "<br><br>" << endl;}
-		cout << "<b>" << recvB << " "<< recvC << "</b><br>" <<
-		recvV << ": " <<
-		recvVtext << endl;
-	} else {
-		cout << "<br>" << recvV << ": " <<
-		recvVtext << endl;
-	}
-  }
-count++;
-prevV = curV;
-//cout << "<br>prevV = " << prevV;
-//i++;
-//  	count++;
-//  cout << results << endl;
-//  }
-}
+  log("...END OF FOR-LOOP.");
   cout << endl; // flush output when done
   recfifo.fifoclose();
   log("Close reply fifo.");
