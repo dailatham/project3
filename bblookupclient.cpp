@@ -58,6 +58,7 @@ int main() {
 
   int chapterNum, bookNum, verseNum, Numv;
 
+  //====================================== ERROR CHECKING ===============================================//
   // Convert and check input data
   bool validInput = false;
   if (chapter != cgi.getElements().end()) {
@@ -118,7 +119,8 @@ int main() {
         }
   }
 
-  /////////////////////// P3pt2 
+  //====================================== END ===================================================//
+  
   stringstream ss;
   stringstream ss1;
   string out = "";
@@ -136,12 +138,14 @@ int main() {
   recfifo.openread();
   log("\tOpen reply fifo.");
 
- // output the response to the web page
+  // output the response to the web page
   string results = "";
 
+  //use when there are muil-verse
   int count = 1;
   int curV, prevV = 0;
 
+  // main loop
   for (int i = 0; i < Numv; i++) {
 	log("\t...IN THE FOR-LOOP...i : " << i);
 
@@ -149,7 +153,7 @@ int main() {
  	results = recfifo.recv();
 	log("\tReceive result: " << results);
 
-  	// sperating the string
+  	// use to store/sperating the string
   	string recvB, str, recvVtext;
   	int recvC, recvV, recvS = 0;
   	int po = 1;
@@ -157,6 +161,7 @@ int main() {
 
   	stringstream recvSS(results);
 
+	// sperating string by (&)
   	while (getline(recvSS, str, '&')) {
 		// DEBUG
 		if (debug) {
@@ -174,6 +179,7 @@ int main() {
 				po++;
 				break;
 			case 3: recvV = stoi(str);
+				curV = recvV;
 				po++;
 				break;
 			case 4:
@@ -187,7 +193,6 @@ int main() {
 	  	}
 	  }
     	  log("\tSUCCESS seperating the result");
-	  curV = recvV;
 
 	  // DEBUG
 	  if (debug) {
@@ -202,25 +207,29 @@ int main() {
 
 	  // Report Output
   	  if (recvS != 0) {
-		cout << recvVtext << endl;
+		// if result isn't SUCCESS
+		cout << "<b>ERROR:</b> " << recvVtext << endl;
+		cout << "<br><b>ERROR:</b> " << recvB <<
+			", chapter " << recvC <<
+			", verse " << recvV << " DO NOT EXIST.";
+
 		log("\tSUCCESS error report");
 		break;
   	  } else {
+		// if SUCCESS
 		if  (count == 1 || curV < prevV) {
+			// format for every new book | chapter | verse
 			if (count > 1) { cout << "<br><br>" << endl;}
 			cout << "<b>" << recvB << " "<< recvC << "</b><br>" <<
-			recvV << " : " <<
-			recvVtext << endl;
+				recvV << " : " <<recvVtext << endl;
 		} else {
-			cout << "<br>" << recvV << " : " <<
-			recvVtext << endl;
+			// format for only verse
+			cout << "<br>" << recvV << " : " << recvVtext << endl;
 		}
 	  }
 	  count++;
   	  prevV = curV;
 	  log("\tSUCCESS result report");
-
-	  //cout << "<br>prevV = " << prevV;
   }
   log("\t...END OF FOR-LOOP.");
   cout << endl; // flush output when done

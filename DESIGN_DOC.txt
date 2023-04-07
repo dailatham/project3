@@ -3,8 +3,8 @@ Request Pipe Format:	book + "&" + chapter + "&" + verse + "&" + num_verse
 Reply Pipe Format:	bookName + "&" + chapter + "&" + verse + "&" + num_verse + "&" + statusCode
 
 ==============================================================================
-NOTE for reply:		Format for no chapter	= bookName&0&0&No chapter found.&2
-			Format for no verse	= bookName&0&0&No verse found.&3
+NOTE for reply:		Format for no chapter	= bookName&chapter&verse&No chapter found.&2
+			Format for no verse	= bookName&chapter&verse&No verse found.&3
 
 			using status code "2" as no chapter.
 			using status code "3" as no verse.

@@ -124,7 +124,8 @@ int main() {
                 	if (result == NO_BOOK) {cout << "NO_BOOK" << endl;}
         	}
 
-	        // Report Verse
+	        // Single Verse or The first verse
+		// if the verse's ref doesnt match the rquest ref
 	        if (!(lVerse.getRef() == ref)){
 			verseExist = false;
         	        string error = webBible.error(result);
@@ -133,10 +134,10 @@ int main() {
                         ss.flush();
                         ss.clear();
 
-//			ss << error << "&" << result;;
-			ss << lVerse.getRef().getBook() << "&"
-                                << lVerse.getRef().getChap() << "&"
-                                << lVerse.getRef().getVerse() << "&"
+			// creating the string for reply
+			ss << ref.getBookName() << "&"
+                                << ref.getChap() << "&"
+                                << ref.getVerse() << "&"
                                 << error << "&" << result;
 
                         string out = ss.str();
@@ -146,9 +147,10 @@ int main() {
 			string out = "";
                         stringstream ss;
 
-//			int bookNum = lVerse.getRef().getBook();
-//			string bookName = to_string(bookNum);
+			// get the book name
 			string bookName = lVerse.getRef().getBookName();
+
+			// creating the string for reply
        	                ss << bookName << "&"
                         	<< lVerse.getRef().getChap() << "&"
                                 << lVerse.getRef().getVerse() << "&"
@@ -159,31 +161,27 @@ int main() {
         	}
 
         	// Multi-verse
+		// if their still more verse and if the first verse exist
         	while (count < nv && (verseExist == true)) {
         	        lVerse = webBible.nextVerse(result);
         	        count++;
         	        curVNum = lVerse.getVerseNum();
 
-	                // Report Verse
-//	                if ( curVNum == 1) {
-                        	string out = "";
-                        	stringstream ss;
+                       	string out = "";
+                       	stringstream ss;
 
-//				int bookNum = lVerse.getRef().getBook();
-//				string bookName = to_string(bookNum);
-				string bookName = lVerse.getRef().getBookName();
-                        	ss << bookName << "&"
-                        	        << lVerse.getRef().getChap() << "&"
-                        	        << lVerse.getRef().getVerse() << "&"
-                        	        << lVerse.getVerse() << "&" << result;
+			// get the book name
+			string bookName = lVerse.getRef().getBookName();
 
-                        	out = ss.str();
-                        	sendfifo.send(out);
-/*        	        } else {
-                	        verse.onlyVerseDisplay();
-                	        cout << endl;
-                	}
-*/      	}
+			// creating the string for reply
+			ss << bookName << "&"
+                               << lVerse.getRef().getChap() << "&"
+                       	       << lVerse.getRef().getVerse() << "&"
+                     	       << lVerse.getVerse() << "&" << result;
+
+                       	out = ss.str();
+                       	sendfifo.send(out);
+	      	}
 
 		sendfifo.fifoclose();  // Close send pipe
 		log("close reply fifo");
